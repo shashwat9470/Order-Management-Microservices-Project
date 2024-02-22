@@ -1,0 +1,116 @@
+networks:
+  friday:
+    name: friday
+    driver: bridge 
+
+services:
+  
+  product-db:
+    container_name: product-db
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: Shashwat
+      MYSQL_PASSWORD: shashwat2001
+      MYSQL_DATABASE: product_microservice_db
+    expose:
+      - "3306"
+    ports:
+      - "9000:3306"
+    volumes:
+      - ./data/product:/var/lib/mysql
+    restart: always
+    networks:
+      - friday
+
+  order-db:
+    container_name: order-db
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: Shashwat
+      MYSQL_PASSWORD: shashwat2001
+      MYSQL_DATABASE: order_microservice_db
+    expose:
+      - "3306"
+    ports:
+      - "9001:3306"
+    volumes:
+      - ./data/order:/var/lib/mysql
+    restart: always
+    networks:
+      - friday
+
+  inventory-db:
+    container_name: inventory-db
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: Shashwat
+      MYSQL_PASSWORD: shashwat2001
+      MYSQL_DATABASE: inventory_microservice_db
+    expose:
+      - "3306"
+    ports:
+      - "9002:3306"
+    volumes:
+      - ./data/inventory:/var/lib/mysql
+    restart: always
+    networks:
+      - friday
+
+  discovery-service:
+    container_name: discovery-service
+    image: 2001shashwatrdr452/discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - friday
+
+  api-gateway:
+    container_name: api-gateway
+    image: 2001shashwatrdr452/api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - friday
+    depends_on:
+      - discovery-service
+
+  product-service:
+    container_name: product-service
+    image: 2001shashwatrdr452/product-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - friday
+    depends_on:
+      - discovery-service
+      - product-db
+      - api-gateway
+
+  order-service:
+    container_name: order-service
+    image: 2001shashwatrdr452/order-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - friday
+    depends_on:
+      - discovery-service
+      - order-db
+      - api-gateway
+    
+  inventory-service:
+    container_name: inventory-service
+    image: 2001shashwatrdr452/inventory-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - friday
+    depends_on:
+      - discovery-service
+      - inventory-db
+      - api-gateway
