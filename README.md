@@ -34,4 +34,50 @@ Inventory service maintains the available quantity of products in the database.
 
 ## How to use
 
+To run the project follow the given steps:
 
+1. Create a directory named `test`.
+2. Downlaod the `compose.yaml` file in `test` directory.
+3. In the `test` directory, make a new directory `data`.
+4. Go into `data` directory.
+5. Create three new directories named `product`, `order`, `inventory`.
+6. Come back to `test` directory and run command `docker compose up -d`.
+
+## Endpoints
+
+**Note:** Access Eureka at `http://localhost:8761/`
+
+| Method | Path | Description |
+|----------|----------|----------|
+| GET | http://localhost:8080/products | Get all products |
+| POST | http://localhost:8080/products | Create Product |
+| GET | http://localhost:8080/orders | Get all orders |
+| POST | http://localhost:8080/orders | Create Order |
+
+### Example body for Create Product endpoint
+
+```
+{
+    "productName":"Samsung Galaxy S24 Ultra",
+    "productDescription":"Embrace the Galaxy A.I.",
+    "price":168000,
+    "quantity":100
+}
+```
+
+### Example body for Create Order endpoint
+
+```
+{
+    {
+    "billingAddress":"House No. 123, xyz street",
+    "deliveryAddress":"House No. 123, xyz street",
+    "orderItemRequests":[
+        {
+            "productId":"product id obtained from Get all products endpoint",
+            "quantity":1
+        }
+    ]
+}
+}
+```
